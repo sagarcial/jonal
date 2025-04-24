@@ -1,9 +1,25 @@
-from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, CallbackQueryHandler
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Maneja el comando /start"""
-    await update.message.reply_text('¡Bienvenido al bot de códigos!')
+    # Texto de bienvenida y menú en un solo mensaje
+    text = "¡Bienvenido al bot de códigos!\nSelecciona una opción:"  
+    keyboard = [
+        [InlineKeyboardButton("Código hogar", callback_data="codigo_hogar"), InlineKeyboardButton("Código de acceso temporal", callback_data="codigo_temporal")],
+        [InlineKeyboardButton("Código de inicio de sesión", callback_data="codigo_login"), InlineKeyboardButton("Restablecimiento de contraseña", callback_data="restablecer_contrasena")]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    await update.message.reply_text(text, reply_markup=reply_markup)
+
+async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Maneja los clicks en los botones del menú"""
+    query = update.callback_query
+    await query.answer()
+    selection = query.data
+    # Aquí podrías agregar lógica específica según la selección
+    await query.edit_message_text(f"Has seleccionado: {selection}")
+
 
 
 def main():
